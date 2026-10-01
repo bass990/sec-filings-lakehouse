@@ -118,7 +118,7 @@ for the free local embedding model, so the number is there when someone asks
 
 | target | store | catalog | verified |
 |---|---|---|---|
-| local | MinIO | Iceberg REST | full pipeline |
+| local | RustFS (S3 API; MinIO image works too) | Iceberg REST | full pipeline |
 | aws | S3 | Glue | Terraform applied; Glue catalog wired in `catalog.py` |
 | azure | ADLS Gen2 | pyiceberg SQL catalog + ADLS IO | Terraform validated (apply blocked by the subscription's region policy; see deploy/README.md) |
 | gcp | GCS | pyiceberg SQL catalog + GCS IO | Terraform validated (apply blocked: project billing account closed) |

@@ -6,7 +6,7 @@ export PYTHONUTF8 = 1
 
 help:
 	@echo "SEC EDGAR AI-ready data platform"
-	@echo "  infra        docker compose up (MinIO, Iceberg REST catalog, Postgres+pgvector)"
+	@echo "  infra        docker compose up (RustFS S3 store, Iceberg REST catalog, Postgres+pgvector)"
 	@echo "  ingest       land the latest quarterly XBRL datasets in bronze   (QUARTERS='2025q1 2025q2')"
 	@echo "  silver       parse bronze zips into Iceberg silver.facts / silver.submissions (point-in-time)"
 	@echo "  marts        dbt build: gold company_quarter, restatements, data-quality tests"

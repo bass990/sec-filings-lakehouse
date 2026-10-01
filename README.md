@@ -24,7 +24,7 @@ point-in-time, with lineage, and behind an evaluation gate.**
   chunk, index version). Cost ledger and data-quality scorecard exposed.
 * **Orchestration:** Dagster asset graph, quarter-partitioned backfills,
   asset checks, schedules.
-* **Infrastructure:** Docker Compose locally (MinIO, Iceberg REST, Postgres +
+* **Infrastructure:** Docker Compose locally (RustFS S3 store, Iceberg REST, Postgres +
   pgvector); Terraform modules for AWS, Azure and GCP, all applied and pipeline-verified
   (see status below). Same code on every target.
 
@@ -51,7 +51,7 @@ restated-value trail for any fact is one call to `/facts/history`.
 
 ```bash
 cp .env.example .env            # put your email in SEC_USER_AGENT (SEC policy)
-docker compose up -d --wait     # MinIO :9000/:9001, Iceberg REST :8181, Postgres :5433
+docker compose up -d --wait     # S3 store (RustFS) :9000/:9001, Iceberg REST :8181, Postgres :5433
 python -m venv .venv && .venv/Scripts/pip install -e ".[dev]"   # Python 3.12
 make ingest                     # bronze: latest two quarterly datasets (~200 MB)
 make silver                     # Iceberg silver.facts / silver.submissions + DuckDB snapshot
@@ -157,6 +157,8 @@ I keep this section because the problems below took more of my time than any fea
 **Three clouds.** AWS applied on the first try. Azure rejected the storage account in five regions with a policy error before I ran `az policy assignment list --disable-scope-strict-match` and read the `listOfAllowedLocations` parameter on the student subscription: canadacentral, westus, norwayeast, northcentralus, mexicocentral, none of which I had tried. The module now defaults to northcentralus and says why. GCP refused the bucket until the project's billing account was reopened. After that each cloud needed its own object-store client behind the same four calls the S3 one exposes, and Azure and GCP needed pyiceberg's SQL catalog because I had no managed Iceberg catalog on either. The same quarter (3,409,904 facts) is loaded on all three.
 
 **The files themselves.** About 30 rows per quarter contain a literal tab inside a free-text field and shift every column after it. The `accepted` timestamp gained fractional seconds in 2025 and broke my parser. DuckDB could not follow pyiceberg's copy-on-write deletes on this machine, which is why dbt runs against a snapshot rather than the Iceberg tables directly. Each of these is handled in code, counted where it matters, and covered by a test with a synthetic zip.
+
+**The first push to GitHub failed CI twice, for reasons that had nothing to do with the pipeline.** The workflow file would not even parse: a step was named "Install (no torch: the offline tests ...)" and the colon inside an unquoted YAML string turned the name into a mapping. One pair of quotes. Then the Docker smoke job could not pull the object store: MinIO's community images on quay.io and Docker Hub went behind a login during 2025, and the stack had only ever run on my machine, where the image was cached. Anyone cloning the repo would have hit the same wall. The compose file now defaults to RustFS, an Apache-2.0 store with the same S3 API on the same ports, with the image overridable so an existing MinIO volume keeps working, and the bucket is created by the AWS CLI image instead of `mc`. I also pinned ruff to the exact version the code was linted with, because CI had been installing whatever was newest and failing on rules that did not exist when the code was written.
 
 ## Layout
 

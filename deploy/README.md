@@ -5,7 +5,7 @@ object store, the Iceberg catalog and the credentials; nothing else changes.
 
 | Target  | Object store            | Iceberg catalog                         | Query engines that read it natively        | Status |
 |---------|-------------------------|------------------------------------------|--------------------------------------------|--------|
-| `local` | MinIO (docker compose)  | REST catalog (docker compose)            | DuckDB, Spark, Trino                        | verified end to end |
+| `local` | RustFS (docker compose) | REST catalog (docker compose)            | DuckDB, Spark, Trino                        | verified end to end |
 | `aws`   | S3                      | AWS Glue Data Catalog                    | Athena, EMR Spark, Redshift Spectrum        | Terraform applied; pipeline verified 2026-09-30: 2025q2 bronze in S3, Iceberg silver in Glue (3,409,904 facts), gold marts published to Glue and queried from Athena (`gold.company_quarter` 27,520 rows) |
 | `azure` | ADLS Gen2               | pyiceberg SQL catalog (Postgres) + ADLS IO | Synapse, Fabric, Databricks               | Terraform applied (northcentralus; the student subscription's policy allows only canadacentral, westus, norwayeast, northcentralus, mexicocentral); pipeline verified: 2025q2 landed in ADLS bronze and loaded into Iceberg silver on ADLS (7,009 submissions, 3,409,904 facts) with the SQL catalog in Postgres |
 | `gcp`   | GCS                     | pyiceberg SQL catalog (Postgres) + GCS IO  | BigQuery (BigLake), Dataproc              | Terraform applied (bucket `sec-lakehouse-bass990`, BigQuery dataset `sec_lakehouse_gold`); pipeline verified: 2025q2 landed in GCS bronze and loaded into Iceberg silver on GCS (3,409,904 facts) with the SQL catalog in Postgres |
@@ -28,7 +28,7 @@ make ingest silver marts
 
 Attach `pipeline_policy_arn` to the IAM user/role that runs the pipeline. Set
 `S3_ENDPOINT_URL`, `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD` to empty strings
-for the run if a local `.env` defines them, otherwise the S3 client points at MinIO.
+for the run if a local `.env` defines them, otherwise the S3 client points at the local store.
 
 Athena reads the Iceberg tables straight from Glue. The workgroup needs a result
 location, which can be passed per query:

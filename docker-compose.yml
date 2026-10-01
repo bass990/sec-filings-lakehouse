@@ -9,30 +9,44 @@
 #   docker compose down -v        # wipe everything
 
 services:
+  # Object store. The service keeps the name `minio` because every endpoint in the
+  # stack points at http://minio:9000, but the default image is RustFS: MinIO's
+  # community images (quay.io/minio/* and docker.io/minio/*) moved behind a login
+  # in 2025 and answer "unauthorized" to anonymous pulls, which broke fresh clones
+  # and CI. RustFS speaks the same S3 API on the same ports. To keep using an
+  # already-cached MinIO image over an existing MinIO volume, set in .env:
+  #   OBJECT_STORE_IMAGE=quay.io/minio/minio:latest
+  #   OBJECT_STORE_COMMAND=server /data --console-address :9001
   minio:
-    image: quay.io/minio/minio:latest
-    command: server /data --console-address ":9001"
+    image: ${OBJECT_STORE_IMAGE:-rustfs/rustfs:latest}
+    command: ${OBJECT_STORE_COMMAND:-rustfs}
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-lakehouse}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-lakehouse-local}
+      RUSTFS_ACCESS_KEY: ${MINIO_ROOT_USER:-lakehouse}
+      RUSTFS_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-lakehouse-local}
+      RUSTFS_VOLUMES: /data
     ports: ["9000:9000", "9001:9001"]
     volumes: ["minio-data:/data"]
     healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
+      test: ["CMD-SHELL", "curl -sf http://127.0.0.1:9000/minio/health/live || exit 1"]
       interval: 5s
       timeout: 5s
       retries: 20
 
   minio-init:
-    image: quay.io/minio/mc:latest
+    image: amazon/aws-cli:latest
     depends_on:
       minio:
         condition: service_healthy
+    environment:
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-lakehouse}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-lakehouse-local}
+      AWS_DEFAULT_REGION: us-east-1
     entrypoint: >
       /bin/sh -c "
-      mc alias set local http://minio:9000 ${MINIO_ROOT_USER:-lakehouse} ${MINIO_ROOT_PASSWORD:-lakehouse-local} &&
-      mc mb -p local/${LAKEHOUSE_BUCKET:-sec-lakehouse} &&
-      mc anonymous set none local/${LAKEHOUSE_BUCKET:-sec-lakehouse} &&
+      aws --endpoint-url http://minio:9000 s3api head-bucket --bucket ${LAKEHOUSE_BUCKET:-sec-lakehouse} 2>/dev/null ||
+      aws --endpoint-url http://minio:9000 s3 mb s3://${LAKEHOUSE_BUCKET:-sec-lakehouse};
       echo bucket-ready"
 
   iceberg-rest:
