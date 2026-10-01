@@ -1,0 +1,32 @@
+{"query": "What are the main risk factors the company faces?", "cik": 320193, "expected_section": "1a"}
+{"query": "How does management explain the change in revenue and margins this year?", "cik": 320193, "expected_section": "7"}
+{"query": "Describe the company's business, products and segments.", "cik": 320193, "expected_section": "1"}
+{"query": "What legal proceedings is the company involved in?", "cik": 320193, "expected_section": "3"}
+{"query": "What does the company say about cybersecurity risk management and governance?", "cik": 320193, "expected_section": "1c"}
+{"query": "What are the main risk factors the company faces?", "cik": 789019, "expected_section": "1a"}
+{"query": "How does management discuss results of operations and liquidity?", "cik": 789019, "expected_section": "7"}
+{"query": "What products and services does the company sell and how is it organized?", "cik": 789019, "expected_section": "1"}
+{"query": "What market risks such as interest rate and foreign currency exposure does the company describe?", "cik": 789019, "expected_section": "7a"}
+{"query": "What are the main risk factors the company faces?", "cik": 1045810, "expected_section": "1a"}
+{"query": "How did data center and gaming revenue change and why?", "cik": 1045810, "expected_section": "7"}
+{"query": "Which properties, facilities and offices does the company operate?", "cik": 1045810, "expected_section": "2"}
+{"query": "What are the main risk factors the company faces?", "cik": 1018724, "expected_section": "1a"}
+{"query": "How does management describe cash flow, liquidity and capital expenditures?", "cik": 1018724, "expected_section": "7"}
+{"query": "What is the company's mission and which segments does it report?", "cik": 1018724, "expected_section": "1"}
+{"query": "What are the main risk factors the company faces?", "cik": 1652044, "expected_section": "1a"}
+{"query": "How did advertising revenue and traffic acquisition costs change?", "cik": 1652044, "expected_section": "7"}
+{"query": "What legal and regulatory proceedings, including antitrust cases, is the company facing?", "cik": 1652044, "expected_section": "3"}
+{"query": "What are the main risk factors the company faces?", "cik": 1326801, "expected_section": "1a"}
+{"query": "How does management explain results for Family of Apps and Reality Labs?", "cik": 1326801, "expected_section": "7"}
+{"query": "What are the main risk factors the company faces?", "cik": 1318605, "expected_section": "1a"}
+{"query": "How does management discuss automotive revenue, deliveries and margins?", "cik": 1318605, "expected_section": "7"}
+{"query": "Describe the company's vehicles, energy products and manufacturing.", "cik": 1318605, "expected_section": "1"}
+{"query": "What are the main risk factors the company faces?", "cik": 19617, "expected_section": "1a"}
+{"query": "How does management discuss net interest income, credit costs and capital ratios?", "cik": 19617, "expected_section": "7"}
+{"query": "What are the main risk factors the company faces?", "cik": 34088, "expected_section": "1a"}
+{"query": "How does management discuss upstream production, oil prices and earnings?", "cik": 34088, "expected_section": "7"}
+{"query": "What is the company's business, including exploration, production and chemicals?", "cik": 34088, "expected_section": "1"}
+{"query": "What are the main risk factors the company faces?", "cik": 104169, "expected_section": "1a"}
+{"query": "How does management explain comparable sales, eCommerce growth and operating income?", "cik": 104169, "expected_section": "7"}
+{"query": "Describe the company's retail segments and store formats.", "cik": 104169, "expected_section": "1"}
+{"query": "What are the company's disclosure controls and internal control over financial reporting?", "cik": 104169, "expected_section": "9a"}

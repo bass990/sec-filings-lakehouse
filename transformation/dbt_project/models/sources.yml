@@ -1,0 +1,28 @@
+version: 2
+
+sources:
+  - name: silver
+    description: Iceberg silver tables snapshotted into DuckDB (system of record stays Iceberg).
+    schema: silver
+    tables:
+      - name: submissions
+        description: One row per filing (adsh) per quarterly dataset.
+        columns:
+          - name: adsh
+            tests: [not_null, unique]
+          - name: cik
+            tests: [not_null]
+      - name: facts
+        description: Every reported version of every numeric XBRL fact; never overwritten.
+        columns:
+          - name: fact_key
+            tests: [not_null]
+          - name: knowledge_date
+            tests: [not_null]
+        tests:
+          # the SEC files contain a few dozen filer-side duplicates per quarter (same key, different
+          # values). They are excluded and counted downstream, so here they only warn.
+          - dbt_utils_free_unique_combination:
+              combination_of_columns: [adsh, tag, version, ddate, qtrs, uom, coreg, segments]
+              config: {severity: warn}
+      - name: processed_manifest

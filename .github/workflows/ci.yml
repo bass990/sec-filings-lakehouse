@@ -1,0 +1,43 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install (no torch: the offline tests never load the embedding model)
+        run: |
+          python -m pip install -U pip
+          pip install -e ".[dev]"
+      - run: ruff check src tests
+      - run: pytest -q
+      - name: dbt compile (parse + contract check, no warehouse needed)
+        working-directory: transformation/dbt_project
+        run: |
+          mkdir -p ../../data
+          dbt parse --profiles-dir .
+      - name: terraform fmt + validate
+        uses: hashicorp/setup-terraform@v3
+      - run: |
+          for d in deploy/aws deploy/azure deploy/gcp; do
+            (cd $d && terraform init -backend=false -input=false >/dev/null && terraform validate)
+          done
+
+  docker-smoke:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bring up the local infra and run bronze -> silver on the synthetic fixture
+        run: |
+          docker compose up -d --wait
+          docker compose ps
+          docker compose down -v

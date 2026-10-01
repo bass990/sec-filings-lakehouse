@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sec-lakehouse"
+version = "0.1.0"
+description = "AI-ready data platform on SEC EDGAR: Iceberg lakehouse with point-in-time financial facts, document chunking + embeddings with lineage, retrieval evaluation that gates index promotion"
+requires-python = ">=3.12,<3.13"
+license = { text = "MIT" }
+authors = [{ name = "Mamadou Bassirou Diallo" }]
+dependencies = [
+    "requests>=2.32",
+    "boto3>=1.35",
+    "pandas>=2.2",
+    "pyarrow>=17",
+    "duckdb>=1.1",
+    "pyiceberg[s3fs,pyarrow,duckdb]>=0.8",
+    "dbt-core>=1.8",
+    "dbt-duckdb>=1.8",
+    "dagster>=1.8",
+    "dagster-webserver>=1.8",
+    "pydantic>=2.8",
+    "python-dotenv>=1.0",
+    "psycopg[binary]>=3.2",
+    "pgvector>=0.3",
+    "sentence-transformers>=3.0",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "anthropic>=0.40",
+    "beautifulsoup4>=4.12",
+    "lxml>=5.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3", "httpx>=0.27", "ruff>=0.7", "moto[s3]>=5.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"]

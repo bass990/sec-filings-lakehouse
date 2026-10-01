@@ -1,0 +1,11 @@
+# dbt-duckdb against the local lakehouse snapshot (see src/sec_lakehouse/lakehouse/snapshot.py).
+# The same models run unchanged on Athena / BigQuery / Databricks by swapping the adapter;
+# they use only ANSI SQL + window functions.
+sec_lakehouse:
+  target: local
+  outputs:
+    local:
+      type: duckdb
+      path: "{{ env_var('LAKEHOUSE_DUCKDB', '../../data/lakehouse.duckdb') }}"
+      schema: main
+      threads: 4

@@ -1,0 +1,18 @@
+# Companies whose 10-K / 10-Q text is fetched, chunked and embedded.
+# Facts (silver/gold) cover EVERY filer in the quarterly datasets; the document
+# corpus is scoped to this list so a laptop can embed it in minutes.
+# CIK = SEC Central Index Key (stable company id).
+companies:
+  - {ticker: AAPL,  cik: 320193,  name: Apple Inc.}
+  - {ticker: MSFT,  cik: 789019,  name: Microsoft Corp.}
+  - {ticker: NVDA,  cik: 1045810, name: NVIDIA Corp.}
+  - {ticker: AMZN,  cik: 1018724, name: Amazon.com Inc.}
+  - {ticker: GOOGL, cik: 1652044, name: Alphabet Inc.}
+  - {ticker: META,  cik: 1326801, name: Meta Platforms Inc.}
+  - {ticker: TSLA,  cik: 1318605, name: Tesla Inc.}
+  - {ticker: JPM,   cik: 19617,   name: JPMorgan Chase & Co.}
+  - {ticker: XOM,   cik: 34088,   name: Exxon Mobil Corp.}
+  - {ticker: WMT,   cik: 104169,  name: Walmart Inc.}
+
+# Forms whose primary document is fetched, in priority order.
+forms: ["10-K", "10-Q"]

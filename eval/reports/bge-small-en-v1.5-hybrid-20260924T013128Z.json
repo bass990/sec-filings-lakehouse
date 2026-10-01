@@ -1,0 +1,16 @@
+{
+  "index_version": "bge-small-en-v1.5-hybrid-20260924T013128Z",
+  "retrieval": "hybrid",
+  "n_known_item": 150,
+  "n_section_intent": 23,
+  "known_item_recall_at_1": 0.7,
+  "known_item_recall_at_5": 1.0,
+  "known_item_mrr": 0.8404,
+  "section_hit_at_5": 0.7391,
+  "latency_p50_ms": 39.6,
+  "latency_p95_ms": 77.2,
+  "promoted": true,
+  "reasons": [],
+  "incumbent": null,
+  "eval_seconds": 7.7
+}

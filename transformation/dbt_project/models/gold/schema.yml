@@ -1,0 +1,65 @@
+version: 2
+
+models:
+  - name: fact_versions
+    description: >
+      Point-in-time backbone. One row per reported version of each numeric fact with a
+      [valid_from, valid_to) window. Consumers reconstruct "as known on D" with
+      valid_from <= D < valid_to. Contract enforced: adding/renaming a column breaks the build.
+    config:
+      contract:
+        enforced: true
+    columns:
+      - {name: fact_key, data_type: varchar, tests: [not_null]}
+      - {name: cik, data_type: integer, tests: [not_null]}
+      - {name: tag, data_type: varchar, tests: [not_null]}
+      - {name: ddate, data_type: date, tests: [not_null]}
+      - {name: qtrs, data_type: integer, tests: [not_null]}
+      - {name: uom, data_type: varchar, tests: [not_null]}
+      - {name: coreg, data_type: varchar}
+      - {name: segments, data_type: varchar}
+      - {name: is_dimensional, data_type: boolean, tests: [not_null]}
+      - {name: value, data_type: double}
+      - {name: footnote, data_type: varchar}
+      - {name: adsh, data_type: varchar, tests: [not_null]}
+      - {name: form, data_type: varchar}
+      - {name: fy, data_type: integer}
+      - {name: fp, data_type: varchar}
+      - {name: taxonomy_version, data_type: varchar}
+      - {name: valid_from, data_type: date, tests: [not_null]}
+      - {name: valid_to, data_type: date, tests: [not_null]}
+      - {name: version_no, data_type: bigint, tests: [not_null]}
+      - {name: n_versions, data_type: bigint, tests: [not_null]}
+      - {name: is_latest, data_type: boolean, tests: [not_null]}
+    tests:
+      - dbt_utils_free_unique_combination:
+          combination_of_columns: [fact_key, version_no]
+      - exactly_one_latest_per_key
+      - windows_do_not_overlap
+
+  - name: restatements
+    description: Facts whose value changed between filings (original vs latest).
+    columns:
+      - {name: fact_key, tests: [not_null, unique]}
+      - {name: n_versions, tests: [not_null]}
+
+  - name: company_quarter
+    description: >
+      One row per company and fiscal period with headline metrics as currently known and the
+      date each was first reported. NULL means the filer does not use the standard us-gaap tag.
+    columns:
+      - {name: cik, tests: [not_null]}
+      - {name: fy, tests: [not_null]}
+      - {name: fp, tests: [not_null, accepted_values: {values: ['FY', 'Q1', 'Q2', 'Q3', 'Q4', 'Q']}]}
+      # shell companies with a few dollars of assets legitimately show ratios in the hundreds of thousands;
+      # the contract only forbids negatives
+      - {name: leverage_ratio, tests: [{dbt_utils_free_between: {lo: 0, hi: 1000000000}}]}
+    tests:
+      - dbt_utils_free_unique_combination:
+          combination_of_columns: [cik, period_end, fp]
+
+  - name: data_quality
+    description: Per-quarter completeness/freshness scorecard read by the API /health endpoint.
+    columns:
+      - {name: quarter, tests: [not_null, unique]}
+      - {name: pct_filings_with_facts, tests: [{dbt_utils_free_between: {lo: 50, hi: 100}}]}
